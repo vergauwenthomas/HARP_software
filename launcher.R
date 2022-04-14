@@ -18,13 +18,15 @@ if (grepl( kili_id, getwd(), fixed = TRUE)){
   library(Rfa)
   library(tidyverse)
   
-  
+  workdir = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software'
   #running on Kili
-  workdir = '/home/thoverga/Documents/Thesis studenten/project AM/data_vis_tests'
-  model_output_folder = '/mnt/HDS_ALD_DATA/ALD_DATA/thoverga/testrun_LUMI/fc'
-  obs_folder = '/media/thoverga/WORK/init_lumi_fc/observations'
-  fctable_folder = '/media/thoverga/WORK/init_lumi_fc/FCTABLE'
-  clim_file = '/mnt/HDS_ALD_DATA/ALD_DATA/thoverga/testrun_LUMI/clim_m08'
+  model_output_folder = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/input_data/fc'
+  obs_folder = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/input_data/observations'
+  clim_file = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/input_data/clim_m08'
+  
+  #output
+  fctable_folder = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/output/FCTABLE'
+  figure_folder = "/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/output/figures"
   
 }
 
