@@ -25,8 +25,7 @@ read_custom_observations <- function(obsfolder) {
   obs$units = 'K'
   
   # convert all names to SID's (integer unique indicator)
-  obs$sid <- as.numeric(obs$station)
-  # station_sid_df = obs %>% select(station, sid)
+  obs$sid <- as.numeric(as_factor(obs$station))
 
   # rename, set type and reorder columns
   obs = rename(obs, T2m_observed = value)
