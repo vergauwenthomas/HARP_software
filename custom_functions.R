@@ -25,7 +25,7 @@ read_custom_observations <- function(obsfolder) {
   obs$units = 'K'
   
   # convert all names to SID's (integer unique indicator)
-  obs$sid <- unclass(obs$station)
+  obs$sid <- as.numeric(obs$station)
   # station_sid_df = obs %>% select(station, sid)
 
   # rename, set type and reorder columns
@@ -111,6 +111,8 @@ plot_at_station_level <- function(fcst, observations, stationname, add_observati
       theme_bw() +
       theme(legend.position = "bottom")
   }
+  
+  
 }
 
 

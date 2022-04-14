@@ -60,14 +60,15 @@ source(file.path(workdir, 'custom_functions.R'))
 
 
 #show templates
-harpIO::show_file_templates()
-harpIO::show_harp_parameters()
+# harpIO::show_file_templates()
+# harpIO::show_harp_parameters()
 
 
 #Read observations
 obs = read_custom_observations(obsfolder = obs_folder)
 station_df = obs %>% arrange(SID) %>% filter(duplicated(SID) == FALSE) %>% select(SID, lat, lon, elev)
 
+print(station_df)
 
 #Read in forecast, interpolate to stations location, and save as sqlite
 fcst = read_forecast(
