@@ -20,7 +20,7 @@ software to install
 R packages to install
 * remotes: use Rstudio installer
 * meteogrid: from git: https://github.com/harphub/meteogrid
-* Rfa: from RMI gitlab: https://gitlab-me.oma.be/aladin/Rfa (Send me an email if you can connect thomas.vergauwen@meteo.be)(note to myself: donwload from gitlab and install as .tar.gz)
+* Rfa: from RMI gitlab: https://gitlab-me.oma.be/aladin/Rfa (Send me an email if you can't connect thomas.vergauwen@meteo.be)(note to myself: donwload from gitlab and install as .tar.gz)
 * harp: See installation notes in the ReadMe: https://github.com/harphub/harp. (Make shure to link with the proj4 software installation!)
 * tidyverse: use Rstudio installer
 
