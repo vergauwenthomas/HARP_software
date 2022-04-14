@@ -3,10 +3,10 @@
 #localt machine thomas
 
 local_thomas_id = '/home/thoverga'
-kili_id = '/fileserver/home'
+kili_id_1 = '/fileserver/home'
+kili_id_2 = '/group/mealadin'
 
-
-if (grepl( kili_id, getwd(), fixed = TRUE)){
+if (grepl( kili_id_1, getwd(), fixed = TRUE) || grepl( kili_id_2, getwd(), fixed = TRUE)){
   cat('Running on Kili')
   #Loading packages (normal location)
   library("meteogrid", lib.loc="/mnt/netapp/group/mealadin/CS-MASK/software/R")
