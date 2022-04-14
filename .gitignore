@@ -2,3 +2,7 @@
 .Rhistory
 
 output/figures/*
+output/FCTABLE
+
+input_data/*
+
