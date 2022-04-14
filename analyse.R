@@ -1,10 +1,11 @@
-library(proj4) #see website + install package proj4 installed in conda env --> link --with-proj = /home/thoverga/anaconda3/envs/harp_env/include/proj
-library(meteogrid) #from git
-library(Rfa) #from .gz.tar file
-library(harp) #from git: remotes::install_github("harphub/harpIO")
-library(tidyverse)
+#library(proj4) #see website + install package proj4 installed in conda env --> link --with-proj = /home/thoverga/anaconda3/envs/harp_env/include/proj
+# library(meteogrid) #from git
+# library(Rfa) #from .gz.tar file
+# library(harp) #from git: remotes::install_github("harphub/harpIO")
+# library(tidyverse)
 # library(harpVis) #from git
-source('path_handling.R')
+
+
 
 #harptutorial: https://harphub.github.io/harp_tutorial/index.html
 
@@ -13,8 +14,17 @@ source('path_handling.R')
 
 #-------------------------------------------------------Analysis settings -------------------------------------------------------------------
 #specify forecast
-model='PFAR07csm07'
-field = 'T2m' #should be in show_harp_parameters
+
+#arome files
+# model='PFAR07csm07'
+# postfix_model = '' #no postfix
+# field = 'T2m' #should be in show_harp_parameters
+
+#surfex files
+model = 'ICMSHAR07'
+postfix_model = '.sfx'
+field = 'SFX.T2M'
+
 
 start_year = 2020
 start_month = 8
@@ -47,6 +57,7 @@ source(file.path(workdir, 'custom_functions.R'))
 
 # ------------------------------------------------IO (forecaste and observations) ---------------------------------------------------
 
+
 #show templates
 harpIO::show_file_templates()
 harpIO::show_harp_parameters()
@@ -66,7 +77,7 @@ fcst = read_forecast(
   lead_time     = seq(0, 5, 1),        # We have data for lead times 0 - 48 at 3 hour intervals
   # by            = "1h",                 # We have forecasts every 6 hours
   file_path     = model_output_folder,    # We don't include AROME_Arctic_prod in the path...
-  file_template = "{file_path}/{YYYY}{MM}{DD}/{fcst_model}+{LDT4}", # ...because it's in the template
+  file_template = paste0("{file_path}/{YYYY}{MM}{DD}/{fcst_model}+{LDT4}", postfix_model), # ...because it's in the template
   return_data   = TRUE,                  # We want to get some data back - by default nothing is returned
   transformation_opts = interpolate_opts(stations = station_df,
                                          method="nearest",
@@ -95,6 +106,10 @@ t2m <- read_point_forecast(
   file_path  = fctable_folder,
   file_template = "{file_path}/{fcst_model}/{YYYY}/{MM}/FCTABLE_{parameter}_{YYYY}{MM}_{HH}.sqlite"
 )
+
+#add unit K if it is not present (this is true for surfex files)
+t2m[[model]]$units = 'K'
+
 
 
 # ---------------------------------------------------------- adding observations to the interpolated forecast -----------------------------------------
@@ -131,13 +146,40 @@ plot_at_station_level(fcst = t2m,
                       stationname = stationname,
                       dateresolution = "1h")
 
-
+filename = paste0('T2m_at', stationname,'_for_', model, '.png')
+ggsave(
+  file.path(figure_folder,filename),
+  plot = last_plot(),
+  device = NULL,
+  path = NULL,
+  scale = 1,
+  width = NA,
+  height = NA,
+  units = c("in", "cm", "mm", "px"),
+  dpi = 300,
+  limitsize = TRUE,
+  bg = NULL
+)
 
 
 # ------------------------------------------------------Calculate basic scores --------------------------------------------------------------
 
 plot_basic_scores(t2m)
 
+filename = paste0('T2m_scores_for_', model, '.png')
+ggsave(
+  file.path(figure_folder,filename),
+  plot = last_plot(),
+  device = NULL,
+  path = NULL,
+  scale = 1,
+  width = NA,
+  height = NA,
+  units = c("in", "cm", "mm", "px"),
+  dpi = 300,
+  limitsize = TRUE,
+  bg = NULL
+)
 
 
 

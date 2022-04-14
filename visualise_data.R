@@ -4,9 +4,9 @@ library(Rfa)
 
 datadir = '/media/thoverga/WORK/init_lumi_fc'
 # fc_file = '20200801/ICMSHAR07+0003.sfx' 
-# file = file.path(datadir,'model_output', '20200801', 'ICMSHAR07+0003.sfx') #surfex file
+file = file.path(datadir,'model_output', '20200801', 'ICMSHAR07+0003.sfx') #surfex file
 # file = file.path(datadir,'model_output', '20200801', 'PFAR07csm07+0003') #arome file
-file = file.path(datadir,'clim', 'clim_m08') #clim file
+# file = file.path(datadir,'clim', 'clim_m08') #clim file
 
 
 x=Rfa::FAopen(file)
