@@ -25,6 +25,7 @@ model = 'ICMSHAR07'
 postfix_model = '.sfx'
 field = 'SFX.T2M'
 
+max_LT = 3
 
 start_year = 2020
 start_month = 8
@@ -74,7 +75,7 @@ fcst = read_forecast(
   end_date      = enddatestring,           # the last forecast for which we have data
   fcst_model     = model, # the name of the deterministic model as in the file name
   parameter     = field,                # We are going to read 2m temperature
-  lead_time     = seq(0, 5, 1),        # We have data for lead times 0 - 48 at 3 hour intervals
+  lead_time     = seq(0, max_LT, 1),        # We have data for lead times 0 - 48 at 3 hour intervals
   # by            = "1h",                 # We have forecasts every 6 hours
   file_path     = model_output_folder,    # We don't include AROME_Arctic_prod in the path...
   file_template = paste0("{file_path}/{YYYY}{MM}{DD}/{fcst_model}+{LDT4}", postfix_model), # ...because it's in the template
@@ -101,7 +102,7 @@ t2m <- read_point_forecast(
   fcst_model = model,
   fcst_type  = "det",
   parameter  = field,
-  lead_time = seq(0, 5, 1),
+  lead_time = seq(0, max_LT, 1),
   # by         = "6h",
   file_path  = fctable_folder,
   file_template = "{file_path}/{fcst_model}/{YYYY}/{MM}/FCTABLE_{parameter}_{YYYY}{MM}_{HH}.sqlite"
