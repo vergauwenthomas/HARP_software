@@ -23,6 +23,7 @@ if (grepl( kili_id_1, getwd(), fixed = TRUE) || grepl( kili_id_2, getwd(), fixed
   model_output_folder = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/input_data/fc'
   obs_folder = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/input_data/observations'
   clim_file = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/input_data/clim_m08'
+  stations_meta_df = '/home/thoverga/fileserver/home/cs-mask/db/stations_df.csv'
   
   #output
   fctable_folder = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/output/FCTABLE'
@@ -46,6 +47,7 @@ if (grepl( local_thomas_id, getwd(), fixed = TRUE)){
   #input
   model_output_folder = '/home/thoverga/Documents/github/HARP_software/input_data/model_output'
   obs_folder = '/home/thoverga/Documents/github/HARP_software/input_data/observations'
+  stations_meta_df = '/home/thoverga/Documents/github/db/stations_df.csv'
   clim_file = '/home/thoverga/Documents/github/HARP_software/input_data/clim/clim_m08'
   #output
   fctable_folder = '/home/thoverga/Documents/github/HARP_software/output/FCTABLE'
