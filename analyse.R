@@ -20,12 +20,14 @@
 # postfix_model = '' #no postfix
 # field = 'T2m' #should be in show_harp_parameters
 
+analyse_stations = c('knmi_VLISSINGENAWS', 'Vlinder37')
+
 #surfex files
 model = 'ICMSHAR07'
 postfix_model = '.sfx'
 field = 'SFX.T2M'
 
-max_LT = 3
+max_LT = 24
 
 start_year = 2020
 start_month = 8
@@ -34,8 +36,8 @@ start_hour = 0
 
 end_year = start_year
 end_month = start_month
-end_day = 1
-end_hour = 5
+end_day = 3
+end_hour = 23
 
 # -------------------------------------------------start analysis ---------------------------------------------------------------
 
@@ -52,6 +54,7 @@ enddatestring = paste0(as.character(end_year),
                          str_pad(as.character(end_hour), 2, side = "left", pad = "0")
 )
 
+cat('Analyse from ', startdatestring, ' --> ', enddatestring, ' for model ',model, ' with max LT: ', as.character(max_LT), '\n')
 
 source(file.path(workdir, 'custom_functions.R'))
 
@@ -64,31 +67,37 @@ source(file.path(workdir, 'custom_functions.R'))
 # harpIO::show_harp_parameters()
 
 
-#Read observations
-obs = read_custom_observations(obsfolder = obs_folder)
-station_df = obs %>% arrange(SID) %>% filter(duplicated(SID) == FALSE) %>% select(SID, lat, lon, elev)
+#Get all stations (rejected and Ok)
+station_df = read_station_df(stations_meta_df)
 
-print(station_df)
+#check if sqlite file exists and if so, if you whant to overwrite it
+if (dir.exists(file.path(fctable_folder, model))){
+  cat('FC table already exist!! \n')
+  terminal_input <- readline(prompt="overwrite sql fctable? (y/n): ")
+  if (terminal_input == 'y'){ open_fc = TRUE}
+  else{open_fc = FALSE}
+}else{open_fc = TRUE}
 
-#Read in forecast, interpolate to stations location, and save as sqlite
-fcst = read_forecast(
-  start_date    = startdatestring,           # the first forecast for which we have data
-  end_date      = enddatestring,           # the last forecast for which we have data
-  fcst_model     = model, # the name of the deterministic model as in the file name
-  parameter     = field,                # We are going to read 2m temperature
-  lead_time     = seq(0, max_LT, 1),        # We have data for lead times 0 - 48 at 3 hour intervals
-  # by            = "1h",                 # We have forecasts every 6 hours
-  file_path     = model_output_folder,    # We don't include AROME_Arctic_prod in the path...
-  file_template = paste0("{file_path}/{YYYY}{MM}{DD}/{fcst_model}+{LDT4}", postfix_model), # ...because it's in the template
-  return_data   = TRUE,                  # We want to get some data back - by default nothing is returned
-  transformation_opts = interpolate_opts(stations = station_df,
-                                         method="nearest",
-                                         correct_t2m = TRUE,
-                                         clim_file = clim_file), #TODO: check effect of temperature corrections
-  transformation = 'interpolate',
-  output_file_opts = sqlite_opts(path = fctable_folder) #output to sqlite format
-)
-
+if (open_fc){
+  #Read in forecast, interpolate to stations location, and save as sqlite
+ read_forecast(
+    start_date    = startdatestring,           # the first forecast for which we have data
+    end_date      = enddatestring,           # the last forecast for which we have data
+    fcst_model     = model, # the name of the deterministic model as in the file name
+    parameter     = field,                # We are going to read 2m temperature
+    lead_time     = seq(0, max_LT, 1),        # We have data for lead times 0 - 48 at 3 hour intervals
+    # by            = "1h",                 # We have forecasts every 6 hours
+    file_path     = model_output_folder,    # We don't include AROME_Arctic_prod in the path...
+    file_template = paste0("{file_path}/{YYYY}{MM}{DD}/{fcst_model}+{LDT4}", postfix_model), # ...because it's in the template
+    return_data   = FALSE,                  # We want to get some data back - by default nothing is returned
+    transformation_opts = interpolate_opts(stations = station_df,
+                                           method="nearest",
+                                           correct_t2m = TRUE,
+                                           clim_file = clim_file), #TODO: check effect of temperature corrections
+    transformation = 'interpolate',
+    output_file_opts = sqlite_opts(path = fctable_folder) #output to sqlite format
+  )
+}
 
 #NOTE
   # fcdate = the date the forecast has started (so at midnight)
@@ -96,6 +105,7 @@ fcst = read_forecast(
 
 
 #open the forcast sqlite data (not shure if this is necesarry as i assume is the same as fcst)
+
 
 t2m <- read_point_forecast(
   start_date = startdatestring,
@@ -109,6 +119,9 @@ t2m <- read_point_forecast(
   file_template = "{file_path}/{fcst_model}/{YYYY}/{MM}/FCTABLE_{parameter}_{YYYY}{MM}_{HH}.sqlite"
 )
 
+max_SID_in_fc = max(t2m$ICMSHAR07$SID)
+cat("MAX SID IN FC: ", max_SID_in_fc)
+
 #add unit K if it is not present (this is true for surfex files)
 t2m[[model]]$units = 'K'
 
@@ -116,14 +129,21 @@ t2m[[model]]$units = 'K'
 
 # ---------------------------------------------------------- adding observations to the interpolated forecast -----------------------------------------
 
-#subset observations by time
-starttime = as.POSIXct(startdatestring,format="%Y%m%d%H")
-endtime = as.POSIXct(enddatestring,format="%Y%m%d%H")
-relevant_obs = obs %>% filter(validdate >= starttime) %>% filter(validdate <= endtime)
-#add observations to the fct
-t2m = join_to_fcst(t2m, relevant_obs,
-                   join_type = 'inner', #TODO: er geraken rijen in de fc verloren, hoe komt dit?
-                   by=c('SID', 'validdate'))
+
+
+#Read observations
+obs = read_observations(obsfolder = obs_folder,
+                        stationdf = station_df)
+
+ok_obs = obs %>% filter(quality_flag == 'ok')
+
+
+
+# Combine fcst with observations
+t2m_joined = add_observations_to_fc(fcst = t2m,
+                                    observations = ok_obs) #only the surviving observations
+
+
 
 
 
@@ -131,47 +151,47 @@ t2m = join_to_fcst(t2m, relevant_obs,
 
 
 #filter to one moment (fcdate or validdate)
-fc_at_this_time = expand_date(t2m, validdate) %>% filter(SID==16,
+fc_at_this_time = expand_date(t2m_joined, validdate) %>% filter(SID==16,
                                                          valid_year == 2020,
                                                          valid_month == 8,
                                                          valid_day == 1,
                                                          valid_hour == 2)
 
 
-
-
 #---------------------------------------------------------Analyse at one point ------------------------------------------------------------
-stationname = 'synop_Melle'
 
-plot_at_station_level(fcst = t2m,
-                      observations = obs,
-                      stationname = stationname,
-                      dateresolution = "1h")
+for (stationname in analyse_stations){
+  fig1 = plot_at_station_level(fcst = t2m_joined,
+                               stationname = stationname,
+                               dateresolution = "1h")
+  
+  filename = paste0('T2m_at', stationname,'_for_', model, '.png')
+  ggsave(
+    file.path(figure_folder,filename),
+    plot = fig1,
+    device = NULL,
+    path = NULL,
+    scale = 1,
+    width = NA,
+    height = NA,
+    units = c("in", "cm", "mm", "px"),
+    dpi = 300,
+    limitsize = TRUE,
+    bg = NULL
+  )
 
-filename = paste0('T2m_at', stationname,'_for_', model, '.png')
-ggsave(
-  file.path(figure_folder,filename),
-  plot = last_plot(),
-  device = NULL,
-  path = NULL,
-  scale = 1,
-  width = NA,
-  height = NA,
-  units = c("in", "cm", "mm", "px"),
-  dpi = 300,
-  limitsize = TRUE,
-  bg = NULL
-)
+}
+
 
 
 # ------------------------------------------------------Calculate basic scores --------------------------------------------------------------
 
-plot_basic_scores(t2m)
+fig2 = plot_basic_scores(t2m_joined)
 
 filename = paste0('T2m_scores_for_', model, '.png')
 ggsave(
   file.path(figure_folder,filename),
-  plot = last_plot(),
+  plot = fig2,
   device = NULL,
   path = NULL,
   scale = 1,
@@ -182,6 +202,7 @@ ggsave(
   limitsize = TRUE,
   bg = NULL
 )
+
 
 
 
