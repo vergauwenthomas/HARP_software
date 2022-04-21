@@ -1,11 +1,3 @@
-#library(proj4) #see website + install package proj4 installed in conda env --> link --with-proj = /home/thoverga/anaconda3/envs/harp_env/include/proj
-# library(meteogrid) #from git
-# library(Rfa) #from .gz.tar file
-# library(harp) #from git: remotes::install_github("harphub/harpIO")
-# library(tidyverse)
-# library(harpVis) #from git
-
-
 
 #harptutorial: https://harphub.github.io/harp_tutorial/index.html
 
@@ -16,16 +8,16 @@
 #specify forecast
 
 #arome files
-# model='PFAR07csm07'
-# postfix_model = '' #no postfix
-# field = 'T2m' #should be in show_harp_parameters
+model='PFAR07csm07'
+postfix_model = '' #no postfix
+field = 'T2m' #should be in show_harp_parameters
 
 analyse_stations = c('knmi_VLISSINGENAWS', 'Vlinder37')
 
 #surfex files
-model = 'ICMSHAR07'
-postfix_model = '.sfx'
-field = 'SFX.T2M'
+# model = 'ICMSHAR07'
+# postfix_model = '.sfx'
+# field = 'SFX.T2M'
 
 max_LT = 24
 
@@ -36,7 +28,7 @@ start_hour = 0
 
 end_year = start_year
 end_month = start_month
-end_day = 3
+end_day = 31
 end_hour = 23
 
 # -------------------------------------------------start analysis ---------------------------------------------------------------
@@ -78,6 +70,8 @@ if (dir.exists(file.path(fctable_folder, model))){
   else{open_fc = FALSE}
 }else{open_fc = TRUE}
 
+
+
 if (open_fc){
   #Read in forecast, interpolate to stations location, and save as sqlite
  read_forecast(
@@ -88,7 +82,7 @@ if (open_fc){
     lead_time     = seq(0, max_LT, 1),        # We have data for lead times 0 - 48 at 3 hour intervals
     # by            = "1h",                 # We have forecasts every 6 hours
     file_path     = model_output_folder,    # We don't include AROME_Arctic_prod in the path...
-    file_template = paste0("{file_path}/{YYYY}{MM}{DD}/{fcst_model}+{LDT4}", postfix_model), # ...because it's in the template
+    file_template = paste0("{file_path}/{YYYY}{MM}{DD}/fc/{fcst_model}+{LDT4}", postfix_model), # ...because it's in the template
     return_data   = FALSE,                  # We want to get some data back - by default nothing is returned
     transformation_opts = interpolate_opts(stations = station_df,
                                            method="nearest",
@@ -98,6 +92,7 @@ if (open_fc){
     output_file_opts = sqlite_opts(path = fctable_folder) #output to sqlite format
   )
 }
+
 
 #NOTE
   # fcdate = the date the forecast has started (so at midnight)
@@ -135,10 +130,13 @@ t2m[[model]]$units = 'K'
 obs = read_observations(obsfolder = obs_folder,
                         stationdf = station_df)
 
+#TODO: make better fix for LC vs UTC
+add_hours_to_obs = 2
+obs$validdate = obs$validdate + (add_hours_to_obs * 60 * 60)
+
+
+
 ok_obs = obs %>% filter(quality_flag == 'ok')
-
-
-
 # Combine fcst with observations
 t2m_joined = add_observations_to_fc(fcst = t2m,
                                     observations = ok_obs) #only the surviving observations
@@ -158,50 +156,67 @@ fc_at_this_time = expand_date(t2m_joined, validdate) %>% filter(SID==16,
                                                          valid_hour == 2)
 
 
-#---------------------------------------------------------Analyse at one point ------------------------------------------------------------
 
+
+#---------------------------------------------------------Analyse at one point ------------------------------------------------------------
+analyse_stations = c('synop_Melle', 'synop_Zeebrugge', 'synop_Stabroek', 'synop_SPA', 'synop_Waimes')
 for (stationname in analyse_stations){
-  fig1 = plot_at_station_level(fcst = t2m_joined,
-                               stationname = stationname,
-                               dateresolution = "1h")
   
-  filename = paste0('T2m_at', stationname,'_for_', model, '.png')
-  ggsave(
-    file.path(figure_folder,filename),
-    plot = fig1,
-    device = NULL,
-    path = NULL,
-    scale = 1,
-    width = NA,
-    height = NA,
-    units = c("in", "cm", "mm", "px"),
-    dpi = 300,
-    limitsize = TRUE,
-    bg = NULL
-  )
+  #subset fcst to one station
+  fc_one_station = t2m_joined
+  station_found = FALSE
+  while (station_found == FALSE){
+    if (!(stationname %in% bind_fcst(fc_one_station)$station)){
+      cat('Station Not found! \n')
+      available_stations = bind_fcst(fc_one_station) %>% distinct(station)
+      cat('Choose one of the following: \n')
+      print(available_stations)
+      stationname <- readline(prompt="Type stationname: ")
+    }else{
+      fc_one_station[[model]] = fc_one_station[[model]] %>% filter(station == stationname)
+      station_found = TRUE
+    }
+  }
+  
+
+  #plot timeseries
+  plot_at_station_level(fcst = fc_one_station,
+                        figure_folder=figure_folder,
+                        save = TRUE,
+                        use_ggplot_bool = use_ggplot,
+                        dateresolution = "48h")
+  
+  #plot scores based on one station
+  plot_basic_scores(fcst=fc_one_station,
+                    model=model,
+                    only_synop = FALSE,
+                    figure_folder=figure_folder,
+                    save=TRUE,
+                    use_ggplot_bool=use_ggplot) #not used on kili
 
 }
 
 
 
+
+
+
 # ------------------------------------------------------Calculate basic scores --------------------------------------------------------------
 
-fig2 = plot_basic_scores(t2m_joined)
+plot_basic_scores(fcst=t2m_joined,
+                  model=model,
+                  only_synop = FALSE,
+                  figure_folder=figure_folder,
+                  save=TRUE,
+                  use_ggplot_bool=use_ggplot) #not used on kili
 
-filename = paste0('T2m_scores_for_', model, '.png')
-ggsave(
-  file.path(figure_folder,filename),
-  plot = fig2,
-  device = NULL,
-  path = NULL,
-  scale = 1,
-  width = NA,
-  height = NA,
-  units = c("in", "cm", "mm", "px"),
-  dpi = 300,
-  limitsize = TRUE,
-  bg = NULL
-)
+plot_basic_scores(fcst=t2m_joined,
+                  model=model,
+                  only_synop = TRUE,
+                  figure_folder=figure_folder,
+                  save=TRUE,
+                  use_ggplot_bool=FALSE) #not used on kili
+
 
 
 
