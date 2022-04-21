@@ -29,6 +29,8 @@ if (grepl( kili_id_1, getwd(), fixed = TRUE) || grepl( kili_id_2, getwd(), fixed
   fctable_folder = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/output/FCTABLE'
   figure_folder = "/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/output/figures"
   
+  #do not use ggplot bus basic r graphics
+  use_ggplot = FALSE
 }
 
 
@@ -45,14 +47,18 @@ if (grepl( local_thomas_id, getwd(), fixed = TRUE)){
   #running on local machine thomas
   workdir = '/home/thoverga/Documents/github/HARP_software'
   #input
-  model_output_folder = '/home/thoverga/Documents/github/HARP_software/input_data/model_output'
-  obs_folder = '/home/thoverga/Documents/github/HARP_software/input_data/observations'
+  # model_output_folder = '/home/thoverga/Documents/github/HARP_software/input_data/model_output'
+  model_output_folder = '/home/thoverga/LUMI_scratch_mount/experiment1/work'
+  obs_folder = '/home/thoverga/Documents/github/TITAN_software/cs-data/output'
   stations_meta_df = '/home/thoverga/Documents/github/db/stations_df.csv'
   clim_file = '/home/thoverga/Documents/github/HARP_software/input_data/clim/clim_m08'
   #output
-  fctable_folder = '/home/thoverga/Documents/github/HARP_software/output/FCTABLE'
+  # fctable_folder = '/home/thoverga/Documents/github/HARP_software/output/FCTABLE_kili'
+  fctable_folder = '/media/thoverga/WORK/init_lumi_fc/FCTABLE'
   figure_folder = "/home/thoverga/Documents/github/HARP_software/output/figures"
   
+  #use ggplot instead of basic r graphics
+  use_ggplot = TRUE
 }
 
 setwd(workdir)
