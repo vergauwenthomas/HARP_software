@@ -8,16 +8,16 @@
 #specify forecast
 
 #arome files
-model='PFAR07csm07'
-postfix_model = '' #no postfix
-field = 'T2m' #should be in show_harp_parameters
+# model='PFAR07csm07'
+# postfix_model = '' #no postfix
+# field = 'T2m' #should be in show_harp_parameters
 
-analyse_stations = c('knmi_VLISSINGENAWS', 'Vlinder37')
+# analyse_stations = c('knmi_VLISSINGENAWS', 'Vlinder37')
 
 #surfex files
-# model = 'ICMSHAR07'
-# postfix_model = '.sfx'
-# field = 'SFX.T2M'
+model = 'ICMSHAR07'
+postfix_model = '.sfx'
+field = 'SFX.T2M'
 
 max_LT = 24
 
@@ -215,7 +215,7 @@ plot_basic_scores(fcst=t2m_joined,
                   only_synop = TRUE,
                   figure_folder=figure_folder,
                   save=TRUE,
-                  use_ggplot_bool=FALSE) #not used on kili
+                  use_ggplot_bool=use_ggplot) #not used on kili
 
 
 

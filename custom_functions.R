@@ -138,7 +138,7 @@ plot_at_station_level <- function(fcst, figure_folder, save, use_ggplot_bool, da
     if (save){
       ggsave(
         file_path,
-        plot = fig1,
+        plot = plot,
         device = NULL,
         path = NULL,
         scale = 1,

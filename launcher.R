@@ -54,7 +54,7 @@ if (grepl( local_thomas_id, getwd(), fixed = TRUE)){
   clim_file = '/home/thoverga/Documents/github/HARP_software/input_data/clim/clim_m08'
   #output
   # fctable_folder = '/home/thoverga/Documents/github/HARP_software/output/FCTABLE_kili'
-  fctable_folder = '/media/thoverga/WORK/init_lumi_fc/FCTABLE'
+  fctable_folder = '/media/thoverga/WORK/init_lumi_fc/full_month_FCTABLE'
   figure_folder = "/home/thoverga/Documents/github/HARP_software/output/figures"
   
   #use ggplot instead of basic r graphics
