@@ -3,6 +3,8 @@
 #localt machine thomas
 
 local_thomas_id = '/home/thoverga'
+local_tom_id = '/home/tomvdp'
+local_brecht_id = '........'
 kili_id_1 = '/fileserver/home'
 kili_id_2 = '/group/mealadin'
 
@@ -31,6 +33,7 @@ if (grepl( kili_id_1, getwd(), fixed = TRUE) || grepl( kili_id_2, getwd(), fixed
   
   #do not use ggplot bus basic r graphics
   use_ggplot = FALSE
+  do_not_overwrite_fctable = FALSE
 }
 
 
@@ -59,7 +62,63 @@ if (grepl( local_thomas_id, getwd(), fixed = TRUE)){
   
   #use ggplot instead of basic r graphics
   use_ggplot = TRUE
+  do_not_overwrite_fctable = TRUE
+  
 }
+
+if (grepl( local_tom_id, getwd(), fixed = TRUE)){
+  cat('Running on local machine Tom')
+  
+  
+  library(meteogrid) #from git
+  library(Rfa) #from .gz.tar file
+  library(harp) #from git: remotes::install_github("harphub/harpIO")
+  library(tidyverse)
+  
+  #running on local machine tom
+  workdir = '/home/tomvdp/Documenten/AM_project/HARP_software'
+  #input
+  # model_output_folder = '/home/tomvdp/Documenten/AM_project/HARP_software/input_data/model_output'
+  # obs_folder = '/home/tomvdp/Documenten/HARP_software/input_data/observations'
+  # stations_meta_df = '/home/thoverga/Documents/github/db/stations_df.csv'
+  # clim_file = '/home/thoverga/Documents/github/HARP_software/input_data/clim/clim_m08'
+  #output
+  fctable_folder = '/home/tomvdp/Documenten/AM_project/HARP_software/output/FCTABLE'
+  figure_folder = "/home/tomvdp/Documenten/AM_project/HARP_software/output/figures"
+  
+  #use ggplot instead of basic r graphics
+  use_ggplot = TRUE
+  do_not_overwrite_fctable = TRUE
+  
+}
+
+if (grepl( local_brecht_id, getwd(), fixed = TRUE)){
+  cat('Running on local machine Brecht')
+  
+  
+  library(meteogrid) #from git
+  library(Rfa) #from .gz.tar file
+  library(harp) #from git: remotes::install_github("harphub/harpIO")
+  library(tidyverse)
+  
+  #running on local machine tom
+  workdir = ' .... '
+  #input
+  # model_output_folder = '/home/tomvdp/Documenten/AM_project/HARP_software/input_data/model_output'
+  # obs_folder = '/home/tomvdp/Documenten/HARP_software/input_data/observations'
+  # stations_meta_df = '/home/thoverga/Documents/github/db/stations_df.csv'
+  # clim_file = '/home/thoverga/Documents/github/HARP_software/input_data/clim/clim_m08'
+  #output
+  fctable_folder = ' .... '
+  figure_folder = " .... "
+  
+  #use ggplot instead of basic r graphics
+  use_ggplot = TRUE
+  do_not_overwrite_fctable = TRUE
+  
+}
+
+
 
 setwd(workdir)
 source("analyse.R")

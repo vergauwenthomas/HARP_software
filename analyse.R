@@ -62,36 +62,42 @@ source(file.path(workdir, 'custom_functions.R'))
 #Get all stations (rejected and Ok)
 station_df = read_station_df(stations_meta_df)
 
-#check if sqlite file exists and if so, if you whant to overwrite it
-if (dir.exists(file.path(fctable_folder, model))){
-  cat('FC table already exist!! \n')
-  terminal_input <- readline(prompt="overwrite sql fctable? (y/n): ")
-  if (terminal_input == 'y'){ open_fc = TRUE}
-  else{open_fc = FALSE}
-}else{open_fc = TRUE}
 
-
-
-if (open_fc){
-  #Read in forecast, interpolate to stations location, and save as sqlite
- read_forecast(
-    start_date    = startdatestring,           # the first forecast for which we have data
-    end_date      = enddatestring,           # the last forecast for which we have data
-    fcst_model     = model, # the name of the deterministic model as in the file name
-    parameter     = field,                # We are going to read 2m temperature
-    lead_time     = seq(0, max_LT, 1),        # We have data for lead times 0 - 48 at 3 hour intervals
-    # by            = "1h",                 # We have forecasts every 6 hours
-    file_path     = model_output_folder,    # We don't include AROME_Arctic_prod in the path...
-    file_template = paste0("{file_path}/{YYYY}{MM}{DD}/fc/{fcst_model}+{LDT4}", postfix_model), # ...because it's in the template
-    return_data   = FALSE,                  # We want to get some data back - by default nothing is returned
-    transformation_opts = interpolate_opts(stations = station_df,
-                                           method="nearest",
-                                           correct_t2m = TRUE,
-                                           clim_file = clim_file), #TODO: check effect of temperature corrections
-    transformation = 'interpolate',
-    output_file_opts = sqlite_opts(path = fctable_folder) #output to sqlite format
-  )
+if (!(do_not_overwrite_fctable)){
+  #check if sqlite file exists and if so, if you whant to overwrite it
+  if (dir.exists(file.path(fctable_folder, model))){
+    cat('FC table already exist!! \n')
+    terminal_input <- readline(prompt="overwrite sql fctable? (y/n): ")
+    if (terminal_input == 'y'){ open_fc = TRUE}
+    else{open_fc = FALSE}
+  }else{open_fc = TRUE}
+  
+  
+  
+  if (open_fc){
+    #Read in forecast, interpolate to stations location, and save as sqlite
+    read_forecast(
+      start_date    = startdatestring,           # the first forecast for which we have data
+      end_date      = enddatestring,           # the last forecast for which we have data
+      fcst_model     = model, # the name of the deterministic model as in the file name
+      parameter     = field,                # We are going to read 2m temperature
+      lead_time     = seq(0, max_LT, 1),        # We have data for lead times 0 - 48 at 3 hour intervals
+      # by            = "1h",                 # We have forecasts every 6 hours
+      file_path     = model_output_folder,    # We don't include AROME_Arctic_prod in the path...
+      file_template = paste0("{file_path}/{YYYY}{MM}{DD}/fc/{fcst_model}+{LDT4}", postfix_model), # ...because it's in the template
+      return_data   = FALSE,                  # We want to get some data back - by default nothing is returned
+      transformation_opts = interpolate_opts(stations = station_df,
+                                             method="nearest",
+                                             correct_t2m = TRUE,
+                                             clim_file = clim_file), #TODO: check effect of temperature corrections
+      transformation = 'interpolate',
+      output_file_opts = sqlite_opts(path = fctable_folder) #output to sqlite format
+    )
+  }
 }
+
+
+
 
 
 #NOTE
