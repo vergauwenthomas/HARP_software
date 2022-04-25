@@ -12,17 +12,22 @@ Scripts used in the CS-MASK project that are based on Harp.
 `custom_functions.R` Some custom functions to make visuals, and to load the TITAN observations in Harp. 
 
 
-# Required software
+# Required software 
 
-software to install
+software to install (linux)
+* Install R: sudo apt-get install r-base
+* Install Proj: sudo apt-get install proj-bin libproj-dev
+
 * proj4: See installation document https://proj.org/install.html. This is already prepared in the conda env (harp_env). This can be installed with `conda env create -f environment.yml` and then `conda activate harp_env`.
+
+
 
 R packages to install
 * remotes: use Rstudio installer
-* meteogrid: from git: https://github.com/harphub/meteogrid
-* Rfa: from RMI gitlab: https://gitlab-me.oma.be/aladin/Rfa (Send me an email if you can't connect thomas.vergauwen@meteo.be)(note to myself: donwload from gitlab and install as .tar.gz)
+* * tidyverse: use Rstudio installer
+* meteogrid: from git: https://github.com/harphub/meteogrid (remotes::install_github(“harphub/meteogrid”))
 * harp: See installation notes in the ReadMe: https://github.com/harphub/harp. (Make shure to link with the proj4 software installation!)
-* tidyverse: use Rstudio installer
+
 
 # Run locally
 In order to run this script, one has to adapt the paths to the data. These paths are handled by the script path_handlin.R. 
