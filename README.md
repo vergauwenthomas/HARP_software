@@ -17,16 +17,17 @@ Scripts used in the CS-MASK project that are based on Harp.
 software to install (linux)
 * Install R: sudo apt-get install r-base
 * Install Proj: sudo apt-get install proj-bin libproj-dev
-
 * proj4: See installation document https://proj.org/install.html. This is already prepared in the conda env (harp_env). This can be installed with `conda env create -f environment.yml` and then `conda activate harp_env`.
 
 
 
 R packages to install
-* remotes: use Rstudio installer
-* * tidyverse: use Rstudio installer
+* remotes: install.packages("remotes")
+* proj4: install.packages("proj4")
+* tidyverse: install.packages("tidyverse")
+(load packages proj4 and remotes before installing the following)
 * meteogrid: from git: https://github.com/harphub/meteogrid (remotes::install_github(“harphub/meteogrid”))
-* harp: See installation notes in the ReadMe: https://github.com/harphub/harp. (Make shure to link with the proj4 software installation!)
+* harp: See installation notes in the ReadMe: https://github.com/harphub/harp. (remotes::install_github("harphub/harp")) (Make shure to link with the proj4 software installation!)
 
 
 # Run locally
