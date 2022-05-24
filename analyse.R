@@ -90,14 +90,13 @@ if (!(do_not_overwrite_fctable)){
       return_data   = FALSE,                  # We want to get some data back - by default nothing is returned
       transformation_opts = interpolate_opts(stations = station_df,
                                              method="nearest",
-                                             correct_t2m = TRUE,
+                                             correct_t2m = elev_correction,
                                              clim_file = clim_file), #TODO: check effect of temperature corrections
       transformation = 'interpolate',
       output_file_opts = sqlite_opts(path = fctable_folder) #output to sqlite format
     )
   }
 }
-
 
 
 
