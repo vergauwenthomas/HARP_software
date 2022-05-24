@@ -134,8 +134,11 @@ t2m[[model]]$units = 'K'
 
 
 #Read observations
+
 obs = read_observations(obsfolder = obs_folder,
-                        stationdf = station_df)
+                        stationdf = station_df,
+                        start = startdatestring,
+                        end = enddatestring)
 
 #TODO: make better fix for LC vs UTC
 add_hours_to_obs = 2
