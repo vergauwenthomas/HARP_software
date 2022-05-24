@@ -193,7 +193,6 @@ for (stationname in analyse_stations){
   plot_at_station_level(fcst = fc_one_station,
                         figure_folder=figure_folder,
                         save = TRUE,
-                        use_ggplot_bool = use_ggplot,
                         dateresolution = "48h")
   
   #plot scores based on one station
@@ -201,8 +200,7 @@ for (stationname in analyse_stations){
                     model=model,
                     only_synop = FALSE,
                     figure_folder=figure_folder,
-                    save=TRUE,
-                    use_ggplot_bool=use_ggplot) #not used on kili
+                    save=TRUE) 
 
 }
 
@@ -217,15 +215,13 @@ plot_basic_scores(fcst=t2m_joined,
                   model=model,
                   only_synop = FALSE,
                   figure_folder=figure_folder,
-                  save=TRUE,
-                  use_ggplot_bool=use_ggplot) #not used on kili
+                  save=TRUE)
 
 plot_basic_scores(fcst=t2m_joined,
                   model=model,
                   only_synop = TRUE,
                   figure_folder=figure_folder,
-                  save=TRUE,
-                  use_ggplot_bool=use_ggplot) #not used on kili
+                  save=TRUE)
 
 
 

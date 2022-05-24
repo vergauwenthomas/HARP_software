@@ -103,7 +103,7 @@ add_observations_to_fc <- function(fcst, observations){
 
 
 
-plot_at_station_level <- function(fcst, figure_folder, save, use_ggplot_bool, dateresolution = "1h"){
+plot_at_station_level <- function(fcst, figure_folder, save, dateresolution = "1h"){
   
   
   
@@ -121,98 +121,49 @@ plot_at_station_level <- function(fcst, figure_folder, save, use_ggplot_bool, da
   
   
   fcst_at_station = bind_fcst(fcst) %>% mutate(validdate = unix2datetime(validdate))
-  if (use_ggplot_bool){
-    print('hier test')
-    plot = fcst_at_station %>%
-      ggplot(aes(validdate, forecast, colour = mname)) +
-      theme(text=element_text(family="mono")) +
-      geom_line() +
-      geom_point(aes(y = t2m_observed, shape = "Observation"), colour = "blue") +
-      scale_shape_manual(values = 21) +
-      facet_wrap(vars(fcst_cycle), ncol = 1) +
-      scale_x_datetime(
-        breaks = lubridate::ymd_hm(seq_dates(as.character(startdate,'%Y%m%d%H'),
-                                             as.character(enddate,'%Y%m%d%H'),
-                                             dateresolution))
-      ) + 
-      labs(
-        x      = "Date-time",
-        y      = bquote("T2m [K]"),
-        colour = "",
-        title  = paste0("Forecast T2m at ", stationname),
-        shape  = ""
-      ) +
-      theme_bw() +
-      theme(legend.position = "bottom")
-    #print(plot)
+
+  plot = fcst_at_station %>%
+    ggplot(aes(validdate, forecast, colour = mname)) +
+    theme(text=element_text(family="mono")) +
+    geom_line() +
+    geom_point(aes(y = t2m_observed, shape = "Observation"), colour = "blue") +
+    scale_shape_manual(values = 21) +
+    facet_wrap(vars(fcst_cycle), ncol = 1) +
+    scale_x_datetime(
+      breaks = lubridate::ymd_hm(seq_dates(as.character(startdate,'%Y%m%d%H'),
+                                           as.character(enddate,'%Y%m%d%H'),
+                                           dateresolution))
+    ) + 
+    labs(
+      x      = "Date-time",
+      y      = bquote("T2m [K]"),
+      colour = "",
+      title  = paste0("Forecast T2m at ", stationname),
+      shape  = ""
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+  print(plot)
     
-    if (save){
-      print('nu in saving')
-      ggsave(
-        file_path,
-        plot = plot,
-        device = 'pdf',
-        path = NULL,
-        scale = 1,
-        width = NA,
-        height = NA,
-        units = c("in", "cm", "mm", "px"),
-        dpi = 'screen',
-        limitsize = TRUE,
-        bg = NULL
-      )
-      
-      cat("figure saved as: ", file_path, '\n')
-    }
-    
-  }else{
-    
-    graphics.off()
-    print('in graphix')
-    
-    #startdate = fcst_at_station$validdate %>% min()
-    #enddate = fcst_at_station %>% select('validdate') %>% max()
-    
-    
-    #get min max values for the axis ranges
-    maxy = fcst_at_station %>% select(c('forecast', 't2m_observed')) %>% max()
-    miny = fcst_at_station %>% select(c('forecast', 't2m_observed')) %>% min()
-    if (save){
-      png(file=file_path,width=1200,height=400, res=45)
-    }
-    #make plot
-    plot(fcst_at_station$validdate, fcst_at_station$t2m_observed,
-         type='p',
-         col='blue',
-         xaxt="n", #make plot without 
-         #xlab = "Date-time",
-         ylab = "T2m [K]",
-         ylim = c(miny, maxy))
-    axis(1, fcst_at_station$validdate, format(fcst_at_station$validdate, "%Y-%m-%d"))
-    print('making lines')
-    lines(fcst_at_station$validdate, fcst_at_station$forecast,
-          type='l',
-          col='red',
+  if (save){
+    print('nu in saving')
+    ggsave(
+      file_path,
+      plot = plot,
+      device = 'pdf',
+      path = NULL,
+      scale = 1,
+      width = NA,
+      height = NA,
+      units = c("in", "cm", "mm", "px"),
+      dpi = 'screen',
+      limitsize = TRUE,
+      bg = NULL
     )
-    grid(nx = NULL, ny = NULL,
-         lty = 2,      # Grid line type
-         col = "gray", # Grid line color
-         lwd = 2)      # Grid line width
-    
-    # Adding a legend
-    legend("bottomright",
-           legend = c(model, "Observation"),
-           lwd = 1,
-           col = c("red", "blue"))
-    
-    #adding title
-    title(paste0("Forecast T2m at ", stationname))
-    
-    if (save){
-      cat("figure saved as: ", file_path, '\n')
-      dev.off()
+      
+  cat("figure saved as: ", file_path, '\n')
     }
-  }
+  
 }
 
 
@@ -232,7 +183,7 @@ plot_at_station_level <- function(fcst, figure_folder, save, use_ggplot_bool, da
 
 
 
-plot_basic_scores <- function(fcst, model, only_synop, figure_folder, save, use_ggplot_bool){
+plot_basic_scores <- function(fcst, model, only_synop, figure_folder, save){
   " A function to plot the basic scores for a forcast. Make shure the observations are added to the forcast so a column T2m_observed is in the forecast"
   
   
@@ -263,79 +214,35 @@ plot_basic_scores <- function(fcst, model, only_synop, figure_folder, save, use_
   scores = det_verify(fcst, parameter = t2m_observed)$det_summary_scores
   print(scores)
   
-  if (use_ggplot_bool){
-    plot = scores %>% pivot_longer(cols = c('rmse', 'mae', 'bias', 'stde')) %>% select(-num_cases) %>%
-      ggplot(aes(leadtime, value, colour = name)) +
-      geom_line() +
-      facet_wrap(vars(mname), ncol = 1) +
-      labs(
-        x      = "leadtime",
-        y      = bquote("score-specific"),
-        colour = "Scores",
-        title  = paste0("Basic scores ", title_addition)
-      ) +
-      theme_bw() +
-      theme(legend.position = "bottom")
-    print(plot)
+  plot = scores %>% pivot_longer(cols = c('rmse', 'mae', 'bias', 'stde')) %>% select(-num_cases) %>%
+    ggplot(aes(leadtime, value, colour = name)) +
+    geom_line() +
+    facet_wrap(vars(mname), ncol = 1) +
+    labs(
+      x      = "leadtime",
+      y      = bquote("score-specific"),
+      colour = "Scores",
+      title  = paste0("Basic scores ", title_addition)
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
+  print(plot)
     
-    if (save){
-      ggsave(
-        filename,
-        plot = plot,
-        device = 'pdf',
-        path = NULL,
-        scale = 1,
-        width = NA,
-        height = NA,
-        units = c("in", "cm", "mm", "px"),
-        dpi = 300,
-        limitsize = TRUE,
-        bg = NULL
-      )
-      cat("figure saved as: ", filename, '\n')
+  if (save){
+    ggsave(
+      filename,
+      plot = plot,
+      device = 'pdf',
+      path = NULL,
+      scale = 1,
+      width = NA,
+      height = NA,
+      units = c("in", "cm", "mm", "px"),
+      dpi = 300,
+      limitsize = TRUE,
+      bg = NULL
+    )
+    cat("figure saved as: ", filename, '\n')
       
     }
-    
-  }else{ #use standard plotting R functions
-    graphics.off()
-    
-    #get min max values for the axis ranges
-    maxy = scores %>% select(c('bias', 'rmse', 'mae', 'stde')) %>% max()
-    miny = scores %>% select(c('bias', 'rmse', 'mae', 'stde')) %>% min()
-    if (save){
-      png(file=filename)
-    }
-    #make plot
-    plot(scores$leadtime, scores$bias,
-         type='l',
-         col='red',
-         xlab = "Leadtime",
-         ylab = "Score specific",
-         ylim = c(miny, maxy))
-    lines(scores$leadtime, scores$rmse,
-          type='l',
-          col='cyan',
-    )
-    lines(scores$leadtime, scores$mae,
-          type='l',
-          col='green',
-    )
-    lines(scores$leadtime, scores$stde,
-          type='l',
-          col='purple',
-    )
-    
-    # Adding a legend
-    legend("bottomright",
-           legend = c("bias", "rmse", 'mae', 'stde'),
-           lwd = 1,
-           col = c("red", "cyan", 'green', 'purple'))
-    
-    #adding title
-    title(paste0("Basic scores for ", model))
-    if (save){
-      cat("figure saved as: ", filename, '\n')
-      dev.off()
-    }
-  }
 }

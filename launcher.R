@@ -68,8 +68,6 @@ if (grepl( local_thomas_id, getwd(), fixed = TRUE)){
   fctable_folder = '/media/thoverga/WORK/init_lumi_fc/full_month_FCTABLE'
   figure_folder = "/home/thoverga/Documents/github/HARP_software/output/figures"
   
-  #use ggplot instead of basic r graphics
-  use_ggplot = TRUE
   do_not_overwrite_fctable = TRUE
   
 }
@@ -97,8 +95,6 @@ if (grepl( local_tom_id, getwd(), fixed = TRUE)){
   fctable_folder = '/home/tomvdp/Documenten/AM_project/HARP_software/output/FCTABLE'
   figure_folder = "/home/tomvdp/Documenten/AM_project/HARP_software/output/figures"
   
-  #use ggplot instead of basic r graphics
-  use_ggplot = TRUE
   do_not_overwrite_fctable = TRUE
   
 }
@@ -125,8 +121,7 @@ if (grepl( local_brecht_id, getwd(), fixed = TRUE)){
   fctable_folder = ' .... '
   figure_folder = " .... "
   
-  #use ggplot instead of basic r graphics
-  use_ggplot = TRUE
+
   do_not_overwrite_fctable = TRUE
   
 }
