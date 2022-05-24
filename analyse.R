@@ -11,6 +11,7 @@
 # model='PFAR07csm07'
 # postfix_model = '' #no postfix
 # field = 'T2m' #should be in show_harp_parameters
+#elev_correction = TRUE
 
 # analyse_stations = c('knmi_VLISSINGENAWS', 'Vlinder37')
 
@@ -18,6 +19,7 @@
 model = 'ICMSHAR07'
 postfix_model = '.sfx'
 field = 'SFX.T2M'
+elev_correction = FALSE
 
 max_LT = 24
 
@@ -28,8 +30,8 @@ start_hour = 0
 
 end_year = start_year
 end_month = start_month
-end_day = 31
-end_hour = 23
+end_day = 1
+end_hour = 8
 
 # -------------------------------------------------start analysis ---------------------------------------------------------------
 
@@ -165,7 +167,7 @@ fc_at_this_time = expand_date(t2m_joined, validdate) %>% filter(SID==16,
 
 
 #---------------------------------------------------------Analyse at one point ------------------------------------------------------------
-analyse_stations = c('synop_Melle', 'synop_Zeebrugge', 'synop_Stabroek', 'synop_SPA', 'synop_Waimes')
+analyse_stations = c('synop_Melle', 'synop_Uccle-ukkel', 'synop_Zeebrugge', 'synop_Stabroek', 'synop_SPA', 'synop_Waimes')
 for (stationname in analyse_stations){
   
   #subset fcst to one station

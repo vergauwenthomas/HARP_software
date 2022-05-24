@@ -19,20 +19,24 @@ if (grepl( kili_id_1, getwd(), fixed = TRUE) || grepl( kili_id_2, getwd(), fixed
   library("harp", lib.loc="/mnt/netapp/group/mealadin/CS-MASK/software/R")
   library(Rfa)
   library(tidyverse)
+  library("here")
+  workdir = here()
   
-  workdir = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software'
   #running on Kili
-  model_output_folder = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/input_data/fc'
-  obs_folder = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/input_data/observations'
-  clim_file = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/input_data/clim_m08'
-  stations_meta_df = '/home/thoverga/fileserver/home/cs-mask/db/stations_df.csv'
+  model_output_folder = file.path(workdir, 'input_data', 'fc')
+  obs_folder = file.path(workdir, 'input_data', 'observations')
+  clim_file = file.path(workdir, 'input_data', 'clim_m08')
+  stations_meta_df = file.path('input_data', 'stations_df.csv')
+  
   
   #output
-  fctable_folder = '/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/output/FCTABLE'
-  figure_folder = "/mnt/netapp/group/mealadin/CS-MASK/github/HARP_software/output/figures"
+  fctable_folder = file.path(workdir, 'output', 'FCTABLE')
+  figure_folder = file.path(workdir, 'output', 'figures')
   
   #do not use ggplot bus basic r graphics
-  use_ggplot = FALSE
+  use_ggplot = TRUE
+  
+  #Do not overwrite outputtable
   do_not_overwrite_fctable = FALSE
 }
 
