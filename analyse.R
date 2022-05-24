@@ -86,7 +86,7 @@ if (!(do_not_overwrite_fctable)){
       lead_time     = seq(0, max_LT, 1),        # We have data for lead times 0 - 48 at 3 hour intervals
       # by            = "1h",                 # We have forecasts every 6 hours
       file_path     = model_output_folder,    # We don't include AROME_Arctic_prod in the path...
-      file_template = paste0("{file_path}/{YYYY}{MM}{DD}/fc/{fcst_model}+{LDT4}", postfix_model), # ...because it's in the template
+      file_template = paste0(fc_folder_structure, postfix_model), # ...because it's in the template
       return_data   = FALSE,                  # We want to get some data back - by default nothing is returned
       transformation_opts = interpolate_opts(stations = station_df,
                                              method="nearest",

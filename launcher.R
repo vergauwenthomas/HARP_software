@@ -28,6 +28,7 @@ if (grepl( kili_id_1, getwd(), fixed = TRUE) || grepl( kili_id_2, getwd(), fixed
   clim_file = file.path(workdir, 'input_data', 'clim_m08')
   stations_meta_df = file.path('input_data', 'stations_df.csv')
   
+  fc_folder_structure = "{file_path}/{YYYY}{MM}{DD}/{fcst_model}+{LDT4}"
   
   #output
   fctable_folder = file.path(workdir, 'output', 'FCTABLE')
@@ -59,6 +60,9 @@ if (grepl( local_thomas_id, getwd(), fixed = TRUE)){
   obs_folder = '/home/thoverga/Documents/github/TITAN_software/cs-data/output'
   stations_meta_df = '/home/thoverga/Documents/github/db/stations_df.csv'
   clim_file = '/home/thoverga/Documents/github/HARP_software/input_data/clim/clim_m08'
+  
+  fc_folder_structure = "{file_path}/{YYYY}{MM}{DD}/fc/{fcst_model}+{LDT4}"
+  
   #output
   # fctable_folder = '/home/thoverga/Documents/github/HARP_software/output/FCTABLE_kili'
   fctable_folder = '/media/thoverga/WORK/init_lumi_fc/full_month_FCTABLE'
@@ -86,6 +90,9 @@ if (grepl( local_tom_id, getwd(), fixed = TRUE)){
   # obs_folder = '/home/tomvdp/Documenten/HARP_software/input_data/observations'
   # stations_meta_df = '/home/thoverga/Documents/github/db/stations_df.csv'
   # clim_file = '/home/thoverga/Documents/github/HARP_software/input_data/clim/clim_m08'
+  
+  fc_folder_structure = "{file_path}/{YYYY}{MM}{DD}/fc/{fcst_model}+{LDT4}"
+  
   #output
   fctable_folder = '/home/tomvdp/Documenten/AM_project/HARP_software/output/FCTABLE'
   figure_folder = "/home/tomvdp/Documenten/AM_project/HARP_software/output/figures"
@@ -112,6 +119,8 @@ if (grepl( local_brecht_id, getwd(), fixed = TRUE)){
   # obs_folder = '/home/tomvdp/Documenten/HARP_software/input_data/observations'
   # stations_meta_df = '/home/thoverga/Documents/github/db/stations_df.csv'
   # clim_file = '/home/thoverga/Documents/github/HARP_software/input_data/clim/clim_m08'
+  fc_folder_structure = "{file_path}/{YYYY}{MM}{DD}/fc/{fcst_model}+{LDT4}"
+  
   #output
   fctable_folder = ' .... '
   figure_folder = " .... "
